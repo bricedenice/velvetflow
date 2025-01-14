@@ -2,10 +2,19 @@ import com.android.kotlin.multiplatform.ide.models.serialization.androidTargetKe
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform") version "2.1.0"
-    id("com.android.application") version "8.5.2"
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    // Kotlin
+    alias(libs.plugins.kotlinMultiplatform) apply false
+    alias(libs.plugins.kotlinCocoapods) apply false
+    
+    // Android
+    alias(libs.plugins.androidApplication) apply false
+    alias(libs.plugins.androidLibrary) apply false
+    
+    // Compose
+    alias(libs.plugins.jetbrainsCompose) apply false
+    
+    // Serialization
+    alias(libs.plugins.kotlinSerialization) apply false
 }
 
 android {
@@ -22,7 +31,7 @@ android {
 }
 
 kotlin {
-    jvm()
+
     androidTarget()
     ios {
         binaries {
@@ -49,10 +58,23 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:2.3.7")
                 implementation("io.ktor:ktor-server-auth:2.3.7")
                 implementation("io.ktor:ktor-server-auth-jwt:2.3.7")
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+                implementation("io.ktor:ktor-server-core:2.3.7")
+                implementation("io.ktor:ktor-server-auth:2.3.7")
+                implementation("io.ktor:ktor-server-auth-jwt:2.3.7")
+                implementation("aws.sdk.kotlin:cognito-idp:1.0.30")
             }
         }
-        val jvmMain by getting
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation("androidx.activity:activity-compose:1.8.2")
+                implementation("androidx.appcompat:appcompat:1.6.1")
+            }
+        }
         val iosMain by getting {
             dependsOn(commonMain)
         }
@@ -62,6 +84,7 @@ kotlin {
         val wasmJsMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-js:2.3.7")
+                implementation(compose.html.core)
             }
         }
         val wasmJsTest by getting
